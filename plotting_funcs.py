@@ -8,9 +8,22 @@ Functions designed to plot data
 V.0.1
 '''
 
-from numpy import argmin, linspace, min
+from numpy import argmin, linspace, min, vstack
 import matplotlib.pyplot as mp
+from matplotlib.colors import ListedColormap, LinearSegmentedColormap, to_rgba
+import numpy as np
 import os
+
+scope_colours = ['gold', 'limegreen', 'orange', 'royalblue']
+scope_rgba = [to_rgba(colour) for colour in scope_colours]
+og_cmap = mp.cm.get_cmap('tab10')
+
+# Get the colors from the existing colormap
+og_colors = og_cmap(np.linspace(0, 1, og_cmap.N))
+# Combine existing colors with predefined colors
+combined_colors = np.vstack([scope_rgba, og_colors])
+# Create a new colormap from the combined colors
+custom_cmap = ListedColormap(combined_colors)
 
 def plot_spectra(x_data, y_data, data_indexes = [], keys = list[str], shifter: int or float=0,
             axis_lbls = None, sec_axis = True, save = False, 
@@ -81,13 +94,8 @@ def plot_spectra(x_data, y_data, data_indexes = [], keys = list[str], shifter: i
 
 def plot_scope(time, channel_data, multi: bool=False):
 
-    colours = ['gold', 'limegreen', 'orange', 'royalblue']
-
     if multi:
-        if len(channel_data) > 4:
-            num = 1
-        else:
-            num = len(channel_data)
+        num = len(channel_data)
 
         fig, ax = mp.subplots(nrows=num, ncols=1, sharex='all')
         # shared labels
@@ -96,14 +104,13 @@ def plot_scope(time, channel_data, multi: bool=False):
         fig.supylabel('Voltage (V)')
 
         for index, axis in enumerate(ax):
-
-            axis.set_title('Channel ' + '%i' %index)
-            axis.plot(time, channel_data[index], color=colours[index])
+            axis.set_title(f'Channel {index+1}')
+            axis.plot(time, channel_data(index), color=custom_cmap[num])
             
     else:
         fig, ax = mp.subplots()
         for index, data in enumerate(channel_data):
-            ax.plot(time, data, color=colours[index], label='Channel ' + '%i' %index)
+            ax.plot(time, data, color=custom_cmap(index), label=f'Channel {index+1}')
             ax.legend()
         ax.set(xlabel='Time ($\mu$s)', ylabel='Voltage (V)')
 

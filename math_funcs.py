@@ -8,6 +8,7 @@ Functions designed to perform mathematical operations on data
 
 import numpy as np
 from scipy.fftpack import fft, fftfreq
+from scipy.integrate import simpson
 
 def bin_data(data, N: int = 10, edge: bool = False):
     """
@@ -76,6 +77,21 @@ def calc_fft(time, amplitude):
     return frequencies, fftd
 
 def normalise(dataset_1, dataset_2, reference=1):
+    """
+    Normalise a set of data by subtracting a control set and dividing by
+    a reference (optional).
+
+    Parameters
+    ----------
+    dataset_1 : data array to normalise
+    dataset_2 : control data to subtract
+    reference : reference data to divide by
+
+    Returns
+    -------
+    normalised dataset
+
+    """
 
     return np.divide(np.subtract(dataset_1, dataset_2), reference)
 

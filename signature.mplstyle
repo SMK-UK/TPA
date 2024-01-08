@@ -16,7 +16,7 @@ patch.facecolor: 0072B2
 
 ### LEGEND
 legend.fontsize: 10
-legend.frameon: False
+legend.frameon: True
 legend.numpoints: 1
 legend.scatterpoints: 1
 
@@ -34,6 +34,7 @@ font.size: 10
 ### AXES
 axes.grid: True
 grid.linestyle: -
+grid.linewidth: 0.8
 axes.facecolor: whitesmoke
 axes.linewidth: 1.0
 axes.titlesize: 10
