@@ -159,6 +159,52 @@ def zoom(data, bounds:tuple=()):
 
     return start, stop
 
-def norm_tpa_pulses():
+def normalise_pulse_area(data, indexes:list[int]):
+    '''
+    Calculate the normalised pulse area (area_trans / area_ref)
+    
+    <data>:
+        excel file for the data to normalise
+    <indexes>:
+        list of indexes for the corresponding column data
+        
+    [0] trans:
+        index for the transmitted data
+    [1] ref:
+        index for the reference data
+    [2] time:
+        index for the time data
 
-    area_ref_pulse
+    '''
+    # calculate trans pulse area
+    area_pulse = simpson(y=data[:,indexes[0]], x=data[:,indexes[2]])
+    # calculate ref pulse area
+    area_ref = simpson(y=data[:,indexes[1]], x=data[:,indexes[2]])
+    #calculate normalised area
+    norm = normalise(area_pulse, area_ref)
+
+    return norm
+
+def corrected_pulse_area(dataset_1, dataset_2, indexes:list[int]):
+    '''
+    Calculate the corrected and normalised pulse area
+    
+    <dataset_1>:
+        excel file for the transmitted data
+    <dataset_2>:
+        excel file for the reference data
+    <indexes>:
+        list of indexes for the corresponding column data
+        
+    [0] trans:
+        index for the transmitted data
+    [1] ref:
+        index for the reference data
+    [2] time:
+        index for the time data
+
+    '''
+    normalised_trans = normalise_pulse_area(data=dataset_1, indexes=indexes)
+    normalised_ref = normalise_pulse_area(data=dataset_2, indexes=indexes)
+    
+    return np.subtract(normalised_trans, normalised_ref)

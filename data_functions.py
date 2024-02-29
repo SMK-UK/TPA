@@ -72,7 +72,7 @@ def extract_dict(path, delimiter=None):
                 (key, entry) = temp 
                 dictionary[key] = entry
 
-def dir_interogate(path: str, extensions: tuple[str, ...] = (), 
+def dir_interogate(path: str, extensions: list[str] = [], 
                    exceptions: list[str] = [], 
                    folders: list[str] = []) -> tuple[list[str], list[str]]:
     """
@@ -91,7 +91,7 @@ def dir_interogate(path: str, extensions: tuple[str, ...] = (),
     folder_list : list of folder names
     file_list : list of file names
 
-    """
+    """       
     folder_list = []
     file_list = []
     for root, dirs, files in natsorted(os.walk(path)):
@@ -119,8 +119,8 @@ def dir_interogate(path: str, extensions: tuple[str, ...] = (),
             else:
                 temp_files = [file for file in temp_files]
             if extensions:
-                temp_files = [file for file in temp_files
-                              if file.endswith(extensions)]
+                    temp_files = [file for file in temp_files
+                              if file.endswith(tuple(extensions))]
             if temp_files:
                 file_list.append(natsorted(temp_files))
 

@@ -217,3 +217,16 @@ def zoom(data, bounds:tuple=()):
     stop = argmin(abs(data - bounds[1]))
 
     return start, stop
+
+def plot_TPA_data(data, labels):
+
+    fig, ax = mp.subplots()
+    for i, value in enumerate(labels):
+        ax.plot(value, data[i], 'xb')
+        ax.plot(value, data[i+1], 'xr')
+
+    ax.set(xlabel='measurement configuration', ylabel='normalised pulse area')
+    ax.set(title='Control E-Field along {}d$_{1}$')
+    ax.legend(['SP E-field along {}d$_{2}$', 'SP E-field along d$_{1}$'])
+
+    return fig, ax
