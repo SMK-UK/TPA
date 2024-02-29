@@ -91,7 +91,7 @@ def calc_fft(time, amplitude):
 
     return frequencies, fftd
 
-def normalise(dataset_1, dataset_2, reference=1):
+def normalise(dataset_1, reference, dataset_2=0):
     """
     Normalise a set of data by subtracting a control set and dividing by
     a reference (optional).
@@ -99,9 +99,9 @@ def normalise(dataset_1, dataset_2, reference=1):
     Parameters
     ----------
     dataset_1 : data array to normalise
-    dataset_2 : control data to subtract
     reference : reference data to divide by
-
+    dataset_2 : control data to subtract
+    
     Returns
     -------
     normalised dataset
@@ -158,3 +158,7 @@ def zoom(data, bounds:tuple=()):
     stop = np.argmin(abs(data - bounds[1]))
 
     return start, stop
+
+def norm_tpa_pulses():
+
+    area_ref_pulse
