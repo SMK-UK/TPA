@@ -6,8 +6,8 @@ config_params = dict(
     
     # Path to load data from and arguments used to disriminate files loaded
     
-    root                = r"c:\Users\keena\Documents\TPA_test",
-    file                = r"2301_lock_HP",
+    root                = r"C:\Users\sk88\Dropbox (Heriot-Watt University Team)\RES_EPS_Quantum_Photonics_Lab\Experiments\Current Experiments\BB Telecom QM\2024_PrYSO\TPA",
+    file                = r"2301_lock_LP",
     exceptions          = ['.png'],
     extensions          = ['avg.csv'],
     exceptionss         = ['.png'],

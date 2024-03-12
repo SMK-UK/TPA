@@ -190,9 +190,9 @@ def corrected_pulse_area(dataset_1, dataset_2, indexes:list[int]):
     Calculate the corrected and normalised pulse area
     
     <dataset_1>:
-        excel file for the transmitted data
+        excel file for the transmitted and reference pulses
     <dataset_2>:
-        excel file for the reference data
+        excel file for the correction pulse data
     <indexes>:
         list of indexes for the corresponding column data
         
@@ -204,7 +204,8 @@ def corrected_pulse_area(dataset_1, dataset_2, indexes:list[int]):
         index for the time data
 
     '''
-    normalised_trans = normalise_pulse_area(data=dataset_1, indexes=indexes)
-    normalised_ref = normalise_pulse_area(data=dataset_2, indexes=indexes)
-    
-    return np.subtract(normalised_trans, normalised_ref)
+    area_1 = simpson(y=dataset_1[:,indexes[0]], x=dataset_1[:,indexes[2]])
+    area_2 = simpson(y=dataset_1[:,indexes[1]], x=dataset_1[:,indexes[2]])
+    control = simpson(y=dataset_2[:,indexes[0]], x=dataset_2[:,indexes[2]])
+        
+    return normalise(dataset_1=area_1, reference=area_2, dataset_2=control)
