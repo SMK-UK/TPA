@@ -12,37 +12,44 @@ import os, re
 import pandas as pd
 import json
 
-def check_str(string_one, string_two) -> bool:
+def check_str(subset_string: str,
+              main_string: str) -> bool:
     """
-    Checks string for certain characters and flag if true
-    
+    Checks a string against another string and tests if the first is a subset of the second
+
     Parameters
     ----------
-    string_one : string to check
-    string_two : string / characters to check against
-    flip : choose to flip the strings 
+    subset_string : string
+        Validation string to check against
+    main_string : string
+        String to check 
 
     Returns
     -------
     Boolean
+        True or False depending on the condition of check_str
     
     """
-    validation = set(string_one)
-    char_allow = set(string_two)
+    # string to check against - should be a subset of char_allow
+    char_allow = set(subset_string)
+    # should contain the string you want to check
+    validation = set(main_string)
    
-    return validation.issubset(char_allow)
+    return char_allow.issubset(validation)
 
 def check_digits(input_string: str) -> bool:
     """
-    Checks if a string contains only digits and flag if True
+    Checks if a string contains only digits and flags if True
     
     Parameters
     ----------
-    input_string : string 
+    input_string : string
+        String to check the contents of
 
     Returns
     -------
     logical : Boolean
+        True or False depending on the condition of check_str
 
     """
     # check input string for digits and flag True
@@ -54,30 +61,16 @@ def check_digits(input_string: str) -> bool:
 
     return logical
 
-def make_index_dict(value):
-
-    return {x: index for index, x in enumerate(value)} 
-
-def extract_dict(path, delimiter=None):
-    '''
-    Create dictionary from file
-    
-    '''
-    dictionary = {}
-    with open(path) as file:
-        for line in file:
-            temp = [i for i in line.split(delimiter)
-                             if i != '' and i != '\r\n']
-            if len(temp) == 2:
-                (key, entry) = temp 
-                dictionary[key] = entry
-
-def dir_interogate(path: str, extensions: list[str] = [], 
+def dir_interogate(path: str, 
+                   extensions: list[str] = [], 
                    exceptions: list[str] = [], 
                    folders: list[str] = []) -> tuple[list[str], list[str]]:
     """
     Interogate directory and extract all folders and files. Optional: 'extensions', 
     'exceptions' and 'folders' enables selective read of files and folders.
+
+    Only capable of extracting files that are nested once. Will not work for 
+    subfolders or extract files from the main directory.
 
     Parameters
     ----------
@@ -130,49 +123,88 @@ def dir_interogate(path: str, extensions: list[str] = [],
     
     return folder_list, file_list
 
-def find_numbers(string:str, pattern:str='-?\ *\d+\.?\d*(?:[Ee]\ *-?\ *\d+)?') -> list[str]:
+def find_numbers(string:str, 
+                 pattern:str='-?\ *\d+\.?\d*(?:[Ee]\ *-?\ *\d+)?') -> list[str]:
     """
-    Checks string for numbers and returns any hits
+    Checks string for whole numbers (does not split numbers i.e. 180 is 
+    returned as '180' and not ['1','8','0']) and returns a list of all 
+    numbers found in the string
     
     Parameters
     ----------
-    paths : path or list of paths
+    string : string
+        String to check for numbers
 
     Returns
     -------
-    numbers : int or list of ints
+    numbers : list
+        Number found
 
     """
+    # compile the m atch register
     match_number = re.compile(pattern)
-    numbers = [x for x in re.findall(match_number, string)]
+    # create list of numbers found
+    numbers = re.findall(match_number, string)
 
-    if len(numbers) == 1:
-        numbers = numbers[0]
+    # handle no numbers found
+    if not numbers:
+        return None
 
     return numbers
 
-def open_excel(path: str, seperators: str=",") -> list:
+def make_index_dict(keys: list):
     """
-    Open a given excel / csv file and convert each column 
-    to np.array and place into a list
+    Make a simple dictionary containing values with increasing index numbers (starting at 0)
     
     Parameters
     ----------
-    path : file path
+    keys : list
+        Data values to create a dictionary from
+
+    Returns
+    -------
+    dictionary :
+        Key = value pairs for the data in keys
+
+    """
+    return {x: index for index, x in enumerate(keys)} 
+
+def open_csv(path: str, 
+             separators: str=",") -> list:
+    """
+    Open a given excel / csv file and convert each column 
+    to an np.array and place into a list
+    
+    Parameters
+    ----------
+    path : string
+        path to extract the excel data from
+    separators : string
+        Seperators to use in splitting the columns. Default is comma ','
     
     Returns
     -------
-    excel_data : list of column data from pandas data frame
+    excel_data : list
+        Column data from pandas data frame as list of np.arrays
 
     """
-    temp_df = pd.read_csv(path, sep=seperators, engine='python')
-    excel_data = temp_df.to_numpy()
-
-    return excel_data
-
-def read_file(path: str) -> tuple:
+    # attempt to open the file
+    try:
+        temp_df = pd.read_csv(path, sep=separators, engine='python')
+        csv_data = temp_df.to_numpy()
+        return csv_data
+    # flag error if unable to open
+    except FileNotFoundError:
+        print(f"Error: File '{path}' not found.")
+        return []
+    except Exception as e:
+        print(f"Error: An unexpected error occurred while \
+              reading the file '{path}': {str(e)}")
+        return []
+    
+def open_text(path: str):
     """
-    Open a given file and read the first two columns to a list. Works with
+    Open a text file and read the first two columns to a list. Works with
     columns of different length
 
     Parameters
@@ -181,85 +213,111 @@ def read_file(path: str) -> tuple:
     
     Returns
     -------
-    metadata_list : list of metadata read from path
     data_list : list of data read from path
+    metadata_list : list of metadata read from path
     
     """
     data_list = []
-    metadata_list = []
-    with open(path, 'r', newline='') as raw_file:
-    # cycle through each row in the file
-        for row in raw_file:
-            # check row for specific string / values
-            if check_digits(row) == True:
-                # generate list to populate with column data
-                data_temp = [i for i in re.split(r"[\t|,|;]", row)
-                             if i != '' and i != '\r\n']
+    try:
+        with open(path, 'r', newline='') as raw_file:
+            for row in raw_file:
+                data_temp = [i for i in re.split(r"[\t|,|;]", row) if i.strip()]
                 if not data_list:
                     data_list = [[] for _ in range(len(data_temp))]
                 for index, data in enumerate(data_temp):
                     if len(data_list) < index + 1:
                         data_list.append([])
-                    data_list[index].append((float(data)))
-            else:
-                # extract metadata
-                metadata_temp = [i for i in re.split(r"[\t|,|;]", row)
-                                 if i != '' and i != '\r\n']
-                if not metadata_list:
-                    # generate list to populate with column metadata
-                    metadata_list = [[] for _ in range(len(metadata_temp))]
-                for index, metadata in enumerate(metadata_temp):
-                    if len(metadata_list) < index + 1:
-                        metadata_list.append([])
-                    metadata_list[index].append(metadata)
-        raw_file.close()
-
-    return metadata_list, data_list
-
-def open_text(path: str):
-    """
-    Open a given file and read the first two columns to a list. Works with
-    columns of different length
-
-    Parameters
-    ----------
-    path : file path
-    
-    Returns
-    -------
-    data_list : list of data read from path
-    metadata_list : list of metadata read from path
-    
-    """
-    data_list = []
-    with open(path, 'r', newline='') as raw_file:
-    # cycle through each row in the file
-        for row in raw_file:
-            # generate list to populate with column data
-            data_temp = [i for i in re.split(r"[\t|,|;]", row)
-                            if i != '' and i != '\r\n']
-            if not data_list:
-                data_list = [[] for _ in range(len(data_temp))]
-            for index, data in enumerate(data_temp):
-                if len(data_list) < index + 1:
-                    data_list.append([])
-                data_list[index].append(data)
-        raw_file.close()
-
+                    data_list[index].append(data)
+        # flatten the list if neccesary
         if len(data_list) == 1:
             data_list = [data for sublist in data_list for data in sublist]
+    # handle error exceptions        
+    except FileNotFoundError:
+        print(f"Error: File '{path}' not found.")
+        return []
+    except Exception as e:
+        print(f"Error: An unexpected error occurred \
+               while reading the file '{path}': {str(e)}")
+        return []
 
     return data_list
 
+def read_file(path: str) -> tuple:
+    """
+    Open a given file and read the first two columns to a list. Works with
+    different lengths of columns 
+
+    Parameters
+    ----------
+    path : str
+        Path of file to open
+    
+    Returns
+    -------
+    metadata_list : list
+        List of infromation / metadata read from the file
+    data_list : list
+        List of number data read from file
+    
+    """
+    data_list = []
+    metadata_list = []
+    try:
+        with open(path, 'r', newline='') as raw_file:
+            for row in raw_file:
+                if check_digits(row):
+                    # generate list to populate with column data
+                    data_temp = [i for i in re.split(r"[\t|,|;]", row) if i.strip()]
+                    # create the empty list with approriate number of nested lists
+                    if not data_list:
+                        data_list = [[] for _ in range(len(data_temp))]
+                    for index, data in enumerate(data_temp):
+                        if len(data_list) < index + 1:
+                            data_list.append([])
+                        data_list[index].append(float(data))
+                else:
+                    metadata_temp = [i for i in re.split(r"[\t|,|;]", row) if i.strip()]
+                    if not metadata_list:
+                        metadata_list = [[] for _ in range(len(metadata_temp))]
+                    for index, metadata in enumerate(metadata_temp):
+                        if len(metadata_list) < index + 1:
+                            metadata_list.append([])
+                        metadata_list[index].append(metadata)
+    # handle error exceptions
+    except FileNotFoundError:
+        print(f"Error: File '{path}' not found.")
+        return [], []
+    except Exception as e:
+        print(f"Error: An unexpected error occurred \
+              while reading the file '{path}': {str(e)}")
+        return [], []
+
+    return metadata_list, data_list
+
+def read_json(file_name):
+    '''
+    Read from a Json file
+
+    file_name : str
+        Name of file to read
+    
+    '''
+    with open(file_name, 'r') as f:
+        return json.load(f)
+
 def search_paths(folders: list[str], files: list[str], include: list[str] = [], exclude: list[str] = []) -> list[str]:
     """
-    search a list of paths for keys and join files to folders
+    Search a list of paths for include and exclude, joining
+    files to folders if the conditions are met
         
     Parameters
     ----------
-    folders : list of folder names
-    files : list of file names
-    keys : keywords to search folders and files for
+    folders : list
+        List of folder names to 
+    files : list
+        list of file names
+    keys : list
+        keywords to search folders and files for
     
     Returns
     -------
@@ -291,8 +349,10 @@ def seperate_lists(list_to_split):
 
     return [[x for x, y in sublist] for sublist in list_to_split], [[y for x, y in sublist] for sublist in list_to_split]
 
-def spectrum_extract(paths: list[str], keys: list[str]=[], tail: int=1, 
-                include: bool=True) -> tuple:
+def spectrum_extract(paths: list[str],
+                     keys: list[str]=[], 
+                     tail: int=1,
+                     include: bool=True) -> tuple:
     """
     search a list of paths for strings and extract the data
     from selected files depending on the discriminator (keys)
@@ -343,16 +403,12 @@ def spectrum_extract(paths: list[str], keys: list[str]=[], tail: int=1,
 
 def write_json(file_name, data):
     '''
-    Use json to write files
-    
+    Write a Json file
+
+    file_name : str
+        Name of file to save as
+    data : 
+        Json eligible data to save to file   
     '''
     with open(file_name, 'w') as f:
         json.dump(data, f)
-    
-def read_json(file_name):
-    '''
-    Use json to read files
-    
-    '''
-    with open(file_name, 'r') as f:
-        return json.load(f)

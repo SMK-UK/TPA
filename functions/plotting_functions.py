@@ -8,15 +8,17 @@ Functions designed to plot data
 V.0.1
 '''
 
-from numpy import argmin, linspace, min, vstack
-import matplotlib.pyplot as mp
+from numpy import argmin, linspace, min
 from matplotlib.colors import ListedColormap, LinearSegmentedColormap, to_rgba
+import matplotlib.patches as mpatches
+import matplotlib.pyplot as mp
 import numpy as np
 import os
-from fitting_functions import exp_decay
+from functions.fitting_functions import exp_decay
 
-mp.style.use('signature.mplstyle')
+mp.style.use('functions\signature.mplstyle')
 
+# colour map for plotting scope data
 scope_colours = ['gold', 'limegreen', 'orange', 'royalblue']
 scope_rgba = [to_rgba(colour) for colour in scope_colours]
 og_cmap = mp.cm.get_cmap('tab10')
@@ -28,24 +30,118 @@ combined_colors = np.vstack([scope_rgba, og_colors])
 # Create a new colormap from the combined colors
 custom_cmap = ListedColormap(combined_colors)
 
-def plot_spectra(x_data, y_data, data_indexes = [], keys = list[str], shifter: int or float=0,
+def plot_scan(data_dict:dict, y_key:str, yerr_key:str= None, dp:int= 2):
+    '''
+    Plot a scan over a range of x values corresponding to 
+    specific y values with errorbars if required. x data is
+    given as key (string) and so will be converted to an int 
+    and rounded.
+
+    data_dict : dictionary
+        Dictionary with the x data points as keys and y 
+        data points as values
+    y_key : string
+        Corresponding key for desired y data points to 
+        extract
+    yerr_key : string
+        Corresponding key for the y data error
+    dp : int
+        x data points from strings to int and round
+
+    '''
+    fig, ax = mp.subplots()
+    for key in data_dict:
+        x = round(float(key), dp)
+        y_data = data_dict[key][y_key]
+        if yerr_key:
+            error = data_dict[key][yerr_key]
+        else:
+            error = 0
+        ax.errorbar(x, y_data, error, fmt='.b')
+
+    return fig, ax
+
+def plot_scope(time, channel_data, titles=[], multi: bool=False):
+    '''
+    Plot scope data.
+
+    <time>:
+        time channel data goes here
+    <channel_data>:
+        channel data goes here as list
+    <titles>:
+        list of titles corresponding to channel_data
+        goes here
+    <multi>:
+        Choose to plot individual or on top of one another
+
+    '''
+    # set labels if they exist or not
+    labels = []
+    if titles:
+        for title in titles:
+            labels.append(title)
+    if not titles or len(titles) < len(channel_data):
+        for index in range(len(titles), len(channel_data), 1):
+            labels.append(f'Channel {index+1}')
+    # chosose plot type
+    if multi:
+
+        num = len(channel_data)
+        fig, ax = mp.subplots(nrows=num, ncols=1, sharex='all')
+        # shared labels
+        fig.tight_layout(w_pad=2, rect=[0.05, 0.05, 1, 1])
+        fig.supxlabel('Time ($\mu$s)')
+        fig.supylabel('Voltage (V)')
+
+        for index, axis in enumerate(ax):
+            axis.set_title(labels[index])
+            axis.plot(time, channel_data[index], color=custom_cmap(index))
+    else:
+        fig, ax = mp.subplots()
+        for index, data in enumerate(channel_data):
+            ax.plot(time, data, color=custom_cmap(index), label=labels[index])
+            ax.legend()
+        ax.set(xlabel='Time ($\mu$s)', ylabel='Voltage (V)')
+    
+    return fig, ax
+
+def plot_spectra(x_data, y_data, data_indexes = [], keys = list[str], shifter: float=0,
             axis_lbls = None, sec_axis = True, save = False, 
             data_labels = [], lims: tuple = (), woi: list = [], res = 80):
     """
-    zoom in on a particular area of interest in a dataset
+    TO DO:
 
-    Parameters
-    ----------
+    - add ability to change the sec_axis via input
+    - update the code to handle functionality externally and make it more universal
+        e.g. saving figures, labels etc.
+    
+    Plot and display spectra that are combined in plots according to the keys
 
-    data : list / array - data to perform zoom
-    bounds : tuple - lower and upper bounds of the region of interest
+    <x_data>:
+        Wavelength data or similar
+    <y_data>:
+        Absorption data or similar
+    <keys>:
+        List of strings to discriminate between separate plots
+    <shifter>:
+        Choose to shift in y each data set by a predetermined amount
+    <axis_lbls>:
+        Define labels to give each axis
+    <sec_axis>: 
+        Boolean to display a secondary axis; default is designed to display wavenumbers and wavelength
+    <save>:
+        Boolean to save the figures
+    <data_labels>:
+        List of file names corresponding to each y_data set
+    <lims>:
+        Cut the data to display only a sub section in x
+    <woi>:
+        List of vertical lines of interest to add to the plot
+    <res>:
+        Set the resolution for plotting
 
-    Returns
-    -------
-
-    start, stop : start and stop index for the zoomed data
     """
-
     data_lbl = None
 
     for m, key in enumerate(keys):
@@ -95,37 +191,45 @@ def plot_spectra(x_data, y_data, data_indexes = [], keys = list[str], shifter: i
 
             fig.savefig(fname=name, dpi=res, format='png', bbox_inches='tight')
 
-def plot_scope(time, channel_data, titles=[], multi: bool=False):
-
-    labels = []
-    if titles:
-        for title in titles:
-            labels.append(title)
-    if not titles or len(titles) < len(channel_data):
-        for index in range(len(titles), len(channel_data), 1):
-            labels.append(f'Channel {index+1}')
-
-    if multi:
-        num = len(channel_data)
-
-        fig, ax = mp.subplots(nrows=num, ncols=1, sharex='all')
-        # shared labels
-        fig.tight_layout(w_pad=2, rect=[0.05, 0.05, 1, 1])
-        fig.supxlabel('Time ($\mu$s)')
-        fig.supylabel('Voltage (V)')
-
-        for index, axis in enumerate(ax):
-            axis.set_title(labels[index])
-            axis.plot(time, channel_data[index], color=custom_cmap(index))
-            
-    else:
-        fig, ax = mp.subplots()
-        for index, data in enumerate(channel_data):
-            ax.plot(time, data, color=custom_cmap(index), label=labels[index])
-            ax.legend()
-        ax.set(xlabel='Time ($\mu$s)', ylabel='Voltage (V)')
+def plot_TPA(data_sets, data_keys, axis_dict, set_labels):
+    '''
+    Plot TPA data for a given experiment
     
-    return fig, ax
+
+    <data_sets>:
+        time channel data goes here
+    <channel_data>:
+        channel data goes here as list
+    <i>:
+        trigger and channel indexes goes here as dictionary
+
+    '''
+    figs = []
+    axes = []
+    for data_set in data_sets:
+        fig, ax = mp.subplots(nrows=2, sharex=True)
+        figs.append(fig)
+        axes.append(axes)
+        for index, subset in enumerate(data_set):
+            for key in data_keys:
+
+                if "cph" in key:
+                    axis = 0
+                    cp_axis = axis_dict['cph']
+                else:
+                    axis = 1
+                    cp_axis = axis_dict['cpl']
+                if "sph" in key:
+                    mark = 6
+                    colour = 'blue'
+                else:
+                    mark = 7
+                    colour = 'red'
+                ax[axis].plot(set_labels[index], subset[key], marker=mark, color=colour)
+                ax[axis].set(title=f'Control E-Field along d$_{cp_axis}$')
+                ax[axis].legend([f"SP E-field along d$_{axis_dict['sph']}$", f"SP E-field along d$_{axis_dict['spl']}$"])
+
+    return figs, axes
 
 def plot_T1_trigger(time_data, channel_data:list, i:dict=None):
     '''
@@ -198,6 +302,40 @@ def plot_T1_fit(time, data, fit):
     ax[1].plot(time, exp_decay((time), *fit), color='orange', linestyle='--', alpha=1, label='Fit')
     ax[1].set_yscale('log')
     ax[1].legend()
+
+    return fig, ax
+
+def plot_T2_trigger(time_data, channel_data, i:dict=None):
+    '''
+    Plot T2 data where trigger has been selected.
+    Used to check the trigger location
+
+    <time_data>:
+        time channel data goes here
+    <channel_data>:
+        channel data goes here
+    <i>:
+        trigger and channel indexes goes here as dictionary
+
+    '''
+    # default to plot all
+    if not i:
+        i = {'trig': 0,
+             'off': 0,
+             'ramp': -1}
+
+    fig, ax = mp.subplots()
+    # tight layout and shared labels
+    fig.tight_layout(w_pad=2, rect=[0, 0.05, 1, 1])
+
+    # plot echo data
+    ax.set_title('Stimulated Emission')
+    ax.plot(time_data, channel_data, label='original data', alpha=0.8)
+    ax.plot(time_data[i['trig']+i['off']:i['ramp']], channel_data[i['trig']+i['off']:i['ramp']], label='echo selected', alpha=0.8)
+    ax.set(xlabel=('Time ($\mu$s)'), ylabel='Voltage (V)')
+    ax.legend(loc='best')
+
+    return fig, ax
    
 def zoom(data, bounds:tuple=()):
     """
@@ -217,16 +355,3 @@ def zoom(data, bounds:tuple=()):
     stop = argmin(abs(data - bounds[1]))
 
     return start, stop
-
-def plot_TPA_data(data, labels):
-
-    fig, ax = mp.subplots()
-    for i, value in enumerate(labels):
-        ax.plot(value, data[i], 'xb')
-        ax.plot(value, data[i+1], 'xr')
-
-    ax.set(xlabel='measurement configuration', ylabel='normalised pulse area')
-    ax.set(title='Control E-Field along {}d$_{1}$')
-    ax.legend(['SP E-field along {}d$_{2}$', 'SP E-field along d$_{1}$'])
-
-    return fig, ax

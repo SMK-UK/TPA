@@ -3,7 +3,7 @@ Generic smoothing and filtering functions
 '''
 
 from scipy.signal import fftconvolve
-from fitting_functions import gaussian
+from functions.fitting_functions import gaussian
 import numpy as np
 
 def band_pass(N_low, low, N_high, high):

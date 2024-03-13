@@ -91,7 +91,7 @@ def calc_fft(time, amplitude):
 
     return frequencies, fftd
 
-def normalise(dataset_1, reference, dataset_2=0):
+def normalise(dataset_1, dataset_2, reference=1):
     """
     Normalise a set of data by subtracting a control set and dividing by
     a reference (optional).
@@ -99,9 +99,9 @@ def normalise(dataset_1, reference, dataset_2=0):
     Parameters
     ----------
     dataset_1 : data array to normalise
-    reference : reference data to divide by
     dataset_2 : control data to subtract
-    
+    reference : reference data to divide by
+
     Returns
     -------
     normalised dataset
@@ -158,54 +158,3 @@ def zoom(data, bounds:tuple=()):
     stop = np.argmin(abs(data - bounds[1]))
 
     return start, stop
-
-def normalise_pulse_area(data, indexes:list[int]):
-    '''
-    Calculate the normalised pulse area (area_trans / area_ref)
-    
-    <data>:
-        excel file for the data to normalise
-    <indexes>:
-        list of indexes for the corresponding column data
-        
-    [0] trans:
-        index for the transmitted data
-    [1] ref:
-        index for the reference data
-    [2] time:
-        index for the time data
-
-    '''
-    # calculate trans pulse area
-    area_pulse = simpson(y=data[:,indexes[0]], x=data[:,indexes[2]])
-    # calculate ref pulse area
-    area_ref = simpson(y=data[:,indexes[1]], x=data[:,indexes[2]])
-    #calculate normalised area
-    norm = normalise(area_pulse, area_ref)
-
-    return norm
-
-def corrected_pulse_area(dataset_1, dataset_2, indexes:list[int]):
-    '''
-    Calculate the corrected and normalised pulse area
-    
-    <dataset_1>:
-        excel file for the transmitted and reference pulses
-    <dataset_2>:
-        excel file for the correction pulse data
-    <indexes>:
-        list of indexes for the corresponding column data
-        
-    [0] trans:
-        index for the transmitted data
-    [1] ref:
-        index for the reference data
-    [2] time:
-        index for the time data
-
-    '''
-    area_1 = simpson(y=dataset_1[:,indexes[0]], x=dataset_1[:,indexes[2]])
-    area_2 = simpson(y=dataset_1[:,indexes[1]], x=dataset_1[:,indexes[2]])
-    control = simpson(y=dataset_2[:,indexes[0]], x=dataset_2[:,indexes[2]])
-        
-    return normalise(dataset_1=area_1, reference=area_2, dataset_2=control)

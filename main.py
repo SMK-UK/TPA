@@ -1,11 +1,13 @@
+import sys
+# Add the parent directory to the system path
+sys.path.append('..')
+
 import data_functions as dat
-import filter_functions as fil
-import fitting_functions as fit
-from math_functions import normalise, normalise_pulse_area, corrected_pulse_area, OD_calc
+from math_functions import normalise_pulse_area, corrected_pulse_area
 from plotting_functions import plot_scope
 
-import config_file
 from numpy import divide
+import config_file
 import os
 
 # import config file dictionary
@@ -47,6 +49,30 @@ pol_i = {'max_sp': ref_pol_1550[0],
          'min_sp': ref_pol_1550[1],
          'max_cp': ref_pol_995[0],
          'min_cp': ref_pol_995[1]}
+
+# plot 1550 reference data to check assignment
+x = '1550_solo'
+fol = fol_i[x]
+fig, ax = plot_scope(excel_sets[fol][0][:,di['time']], [excel_sets[fol][0][:,di['sp_trans']], excel_sets[fol][0][:,di['sp_ref']], excel_sets[fol][0][:,di['cp_trans']], excel_sets[fol][0][:,di['cp_ref']]], titles=labels, multi=True)
+print(x)
+
+# plot 1550 reference data to check assignment
+x = '995_solo'
+fol = fol_i[x]
+fig, ax = plot_scope(excel_sets[fol][0][:,di['time']], [excel_sets[fol][0][:,di['sp_trans']], excel_sets[fol][0][:,di['sp_ref']], excel_sets[fol][0][:,di['cp_trans']], excel_sets[fol][0][:,di['cp_ref']]], titles=labels, multi=True)
+print(x)
+
+# plot 1550 TPA (absorption high) data to check assignment
+name = folder_list[tpa_i['tpa_sph']]
+fol = fol_i[name]
+fig, ax = plot_scope(excel_sets[fol][0][:,di['time']], [excel_sets[fol][0][:,di['sp_trans']], excel_sets[fol][0][:,di['sp_ref']], excel_sets[fol][0][:,di['cp_trans']], excel_sets[fol][0][:,di['cp_ref']]], titles=labels, multi=True)
+print(name)
+
+# plot 1550 TPA (absorption low) data to check assignment
+name = folder_list[tpa_i['tpa_spl']]
+fol = fol_i[name]
+fig, ax = plot_scope(excel_sets[fol][0][:,di['time']], [excel_sets[fol][0][:,di['sp_trans']], excel_sets[fol][0][:,di['sp_ref']], excel_sets[fol][0][:,di['cp_trans']], excel_sets[fol][0][:,di['cp_ref']]], titles=labels, multi=True)
+print(name)
 
 # indexes for calculations
 area_indexes = [di['cp_trans'], di['cp_ref'], di['time']]

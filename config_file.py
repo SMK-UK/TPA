@@ -6,11 +6,10 @@ config_params = dict(
     
     # Path to load data from and arguments used to disriminate files loaded
     
-    root                = r"C:\Users\sk88\Dropbox (Heriot-Watt University Team)\RES_EPS_Quantum_Photonics_Lab\Experiments\Current Experiments\BB Telecom QM\2024_PrYSO\TPA",
-    file                = r"2301_lock_LP",
+    root                = r"C:\Users\keena\Desktop\TPA_test",
+    file                = r"2301_lock_HP",
     exceptions          = ['.png'],
     extensions          = ['avg.csv'],
-    exceptionss         = ['.png'],
     refs_995            = ['995_solo'],
     refs_1550           = ['1550_solo'],
 
@@ -38,7 +37,7 @@ config_params = dict(
     trig                = 50026, 
     ref_off             = 300,
     off                 = 1100, 
-    ramp                = 65026
+    ramp                = 65026,
 
     ),
 
