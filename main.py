@@ -7,11 +7,11 @@ from math_functions import normalise_pulse_area, corrected_pulse_area
 from plotting_functions import plot_scope
 
 from numpy import divide
-import config_file
+import TPA.TPA_config as TPA_config
 import os
 
 # import config file dictionary
-config = config_file.config_params
+config = TPA_config.config_params
 dir = os.path.join(config['root'], config['file'])
 # get indexes for data channels in the excel files
 di = config['data_indexes']
