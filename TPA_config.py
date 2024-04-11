@@ -7,7 +7,7 @@ config_params = dict(
     # Path to load data from and arguments used to disriminate files loaded
     
     root                = r"C:\Users\keena\Desktop\TPA_test",
-    file                = r"2301_lock_HP",
+    file                = r"1901_unlocked_LP_p4GHz",
     exceptions          = ['.png'],
     extensions          = ['avg.csv'],
     refs_995            = ['995_solo'],
@@ -15,7 +15,7 @@ config_params = dict(
 
     # polarisation for maximum and minimum absorption of both 1550 and 995 pulses
 
-    pol_1550 = ['280', '230'],
+    pol_1550 = ['280', '330'],
     pol_995 = ['40', '85'],
     
     # Index positions for relevant column data in excel files
