@@ -6,8 +6,8 @@ config_params = dict(
     
     # Path to load data from and arguments used to disriminate files loaded
     
-    root                = r"C:\Users\keena\Desktop\TPA_test",
-    file                = r"1901_unlocked_LP_p4GHz",
+    root                = r"C:\Users\sk88\Downloads\TPA",
+    file                = r"1901_unlocked_HP",
     exceptions          = ['.png'],
     extensions          = ['avg.csv'],
     refs_995            = ['995_solo'],

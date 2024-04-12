@@ -6,7 +6,7 @@ config_params = dict(
     
     # Path to load data from and arguments used to disriminate files loaded
     
-    root                = r"C:\Users\keena\Desktop\TPA_test",
+    root                = r"C:\Users\sk88\Downloads\TPA",
     file                = r"1901_Json",
     exceptions          = ['.png'],
     extensions          = ['.json'],
