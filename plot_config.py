@@ -6,19 +6,19 @@ config_params = dict(
     
     # Path to load data from and arguments used to disriminate files loaded
     
-    root                = r"C:\Users\sk88\Downloads\TPA",
-    file                = r"1901_Json",
+    root                = r"C:\Users\sk88\Dropbox (Heriot-Watt University Team)\RES_EPS_Quantum_Photonics_Lab\Experiments\Current Experiments\BB Telecom QM\2024_PrYSO\TPA\1804_TPA",
+    file                = r"Resonant",
     exceptions          = ['.png'],
     extensions          = ['.json'],
-    refs_995            = ['995_solo'],
-    refs_1550           = ['1550_solo'],
+    refs_995            = ['solo_995'],
+    refs_1550           = ['solo_1550'],
 
     c_axis = dict(
 
-    cph = 1,
-    cpl = 2,
-    sph = 2,
-    spl = 1
+    cpf = 1,
+    cps = 2,
+    spf = 2,
+    sps = 1
 
     )
 
