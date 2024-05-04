@@ -6,27 +6,27 @@ config_params = dict(
     
     # Path to load data from and arguments used to disriminate files loaded
     
-    root                = r"C:\Users\sk88\Dropbox (Heriot-Watt University Team)\RES_EPS_Quantum_Photonics_Lab\Experiments\Current Experiments\BB Telecom QM\2024_PrYSO\TPA\1804_TPA",
-    file                = r"Resonant",
+    root                = r"C:\Users\sk88\Dropbox (Heriot-Watt University Team)\RES_EPS_Quantum_Photonics_Lab\Experiments\Current Experiments\BB Telecom QM\2024_PrYSO\TPA",
+    file                = r"1901_unlocked_HP_p2GHz",
     exceptions          = ['.png'],
     extensions          = ['avg.csv'],
-    refs_995            = ['solo_995'],
-    refs_1550           = ['solo_1550'],
+    refs_995            = ['995_solo'],
+    refs_1550           = ['1550_solo'],
 
     # polarisation for maximum and minimum absorption of both 1550 and 995 pulses
 
-    pol_1550 = ['slow', 'fast'],
-    pol_995 = ['slow', 'fast'],
+    pol_1550 = ['280', '330'],
+    pol_995 = ['40', '85'],
     
     # Index positions for relevant column data in excel files
     
     data_indexes = dict(
 
     time = 0,
-    sp_trans = 3,
-    sp_ref = 4,
-    cp_trans = 1,
-    cp_ref = 2
+    sp_trans = 1,
+    sp_ref = 2,
+    cp_trans = 3,
+    cp_ref = 4
 
     ),
 

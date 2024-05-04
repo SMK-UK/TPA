@@ -15,10 +15,10 @@ config_params = dict(
 
     c_axis = dict(
 
-    cpf = 1,
-    cps = 2,
-    spf = 2,
-    sps = 1
+    cph = 1,
+    cpl = 2,
+    sph = 2,
+    spl = 1
 
     )
 
