@@ -6,10 +6,10 @@ config_params = dict(
     
     # Path to load data from and arguments used to disriminate files loaded
     
-    root                = r"C:\Users\sk88\Dropbox (Heriot-Watt University Team)\RES_EPS_Quantum_Photonics_Lab\Experiments\Current Experiments\BB Telecom QM\2024_PrYSO\TPA\2404_TPA",
-    file                = r"Resonant",
-    exceptions          = ['.png'],
-    extensions          = ['avg.csv'],
+    root                = r"C:\Users\keena\Downloads\0720_TPA\Resonant",
+    file                = r"HP",
+    exceptions          = ['avg', '.png'],
+    extensions          = ['.csv'],
     refs_995            = ['solo_995'],
     refs_1550           = ['solo_1550'],
 
@@ -23,10 +23,10 @@ config_params = dict(
     data_indexes = dict(
 
     time = 0,
-    sp_trans = 3,
-    sp_ref = 4,
-    cp_trans = 1,
-    cp_ref = 2
+    sp_trans = 4,
+    sp_ref = 3,
+    cp_trans = 2,
+    cp_ref = 1
 
     ),
 
