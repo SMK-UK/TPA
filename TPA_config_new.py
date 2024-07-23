@@ -6,10 +6,10 @@ config_params = dict(
     
     # Path to load data from and arguments used to disriminate files loaded
     
-    root                = r"C:\Users\sk88\Dropbox (Heriot-Watt University Team)\RES_EPS_Quantum_Photonics_Lab\Experiments\Current Experiments\BB Telecom QM\2024_PrYSO\TPA\2404_TPA",
-    file                = r"Resonant",
-    exceptions          = ['.png'],
-    extensions          = ['avg.csv'],
+    root                = r"C:\Users\sk88\Heriot-Watt University Team Dropbox\RES_EPS_Quantum_Photonics_Lab\Experiments\Current Experiments\BB Telecom QM\2024_PrYSO\TPA\0509_TPA\Pulse_width",
+    file                = r"10us",
+    exceptions          = ['avg', '.png'],
+    extensions          = ['.csv'],
     refs_995            = ['solo_995'],
     refs_1550           = ['solo_1550'],
 
@@ -28,23 +28,7 @@ config_params = dict(
     cp_trans = 1,
     cp_ref = 2
 
-    ),
-
-    # Index positions for trimming the data
-
-    trim_indexes = dict(
-    
-    trig                = 50026, 
-    ref_off             = 300,
-    off                 = 1100, 
-    ramp                = 65026,
-
-    ),
-
-    # Guess T1 times for the data
-
-    guess_ref_T1 = 1E-6,
-    guess_T1 = 10E-6
+    )
 
 )
 
