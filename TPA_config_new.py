@@ -6,9 +6,9 @@ config_params = dict(
     
     # Path to load data from and arguments used to disriminate files loaded
     
-    root                = r"C:\Users\sk88\Heriot-Watt University Team Dropbox\RES_EPS_Quantum_Photonics_Lab\Experiments\Current Experiments\BB Telecom QM\2024_PrYSO\TPA\0509_TPA\Pulse_width",
-    file                = r"10us",
-    exceptions          = ['avg', '.png'],
+    root                = r"C:\Users\sk88\Heriot-Watt University Team Dropbox\RES_EPS_Quantum_Photonics_Lab\Experiments\Current Experiments\BB Telecom QM\2024_PrYSO\TPA\0725_TPA\Resonant\HP",
+    file                = r"5us",
+    exceptions          = ['sgl', '.png'],
     extensions          = ['.csv'],
     refs_995            = ['solo_995'],
     refs_1550           = ['solo_1550'],
